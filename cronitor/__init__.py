@@ -6,6 +6,8 @@ import sys
 import requests
 import yaml
 from yaml.loader import SafeLoader
+from pprint import pprint
+import difflib
 
 from .monitor import Monitor, YAML
 
@@ -104,3 +106,21 @@ def read_config(path=None, output=False):
         data = yaml.load(conf, Loader=SafeLoader)
         if output:
             return data
+
+def prepare_data_for_diff(dict):
+    data_str = pprint.pformat(dict, sort_dicts=True)
+    return data_str.split("\n")
+
+def diff_config(output=False):
+    remote_json = yaml.load(Monitor.as_yaml(), Loader=SafeLoader)
+    local_json = read_config(output=True)
+    diff_result = difflib.ndiff(prepare_data_for_diff(remote_json), prepare_data_for_diff(local_json))
+    for line in diff_result:
+        if line.startswith("-"):
+            print("Remote : " + line)
+        elif line.startswith("+"):
+            print("Local  : " + line)
+        elif line.startswith("?"):
+            print("Diff   : " + line)
+    if output:
+        return diff_result
