@@ -1,4 +1,4 @@
 import cronitor
 
-cronitor.api_key = 'f6c265add611404490e3f5cd7620a0e6'
+cronitor.api_key = 'cc8f997625d644338c85a1c611c31dd3'
 cronitor.diff_config('cronitor.yaml')
