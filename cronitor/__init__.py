@@ -6,7 +6,7 @@ import sys
 import requests
 import yaml
 from yaml.loader import SafeLoader
-from pprint import pprint
+import pprint as pp
 import difflib
 
 from .monitor import Monitor, YAML
@@ -108,7 +108,7 @@ def read_config(path=None, output=False):
             return data
 
 def prepare_data_for_diff(dict):
-    data_str = pprint.pformat(dict, sort_dicts=True)
+    data_str = pp.pformat(dict, sort_dicts=True)
     return data_str.split("\n")
 
 def diff_config(path, output=False):
