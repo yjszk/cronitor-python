@@ -111,9 +111,9 @@ def prepare_data_for_diff(dict):
     data_str = pprint.pformat(dict, sort_dicts=True)
     return data_str.split("\n")
 
-def diff_config(output=False):
+def diff_config(path, output=False):
     remote_json = yaml.load(Monitor.as_yaml(), Loader=SafeLoader)
-    local_json = read_config(output=True)
+    local_json = read_config(path, output=True)
     diff_result = difflib.ndiff(prepare_data_for_diff(remote_json), prepare_data_for_diff(local_json))
     for line in diff_result:
         if line.startswith("-"):
