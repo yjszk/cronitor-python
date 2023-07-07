@@ -28,10 +28,10 @@ class CronitorTests(unittest.TestCase):
     def test_validate_config(self, mock):
             cronitor.config = YAML_PATH
             cronitor.validate_config()
-            mock.assert_called_once_with(monitors=YAML_DATA, rollback=True, format='yaml')
+            mock.assert_called_once_with(monitors=YAML_DATA, timeout=10, rollback=True, format='yaml')
 
     @patch('cronitor.Monitor.put')
     def test_apply_config(self, mock):
         cronitor.config = YAML_PATH
         cronitor.apply_config()
-        mock.assert_called_once_with(monitors=YAML_DATA, rollback=False, format='yaml')
+        mock.assert_called_once_with(monitors=YAML_DATA, timeout=10, rollback=False, format='yaml')

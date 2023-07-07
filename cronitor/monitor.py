@@ -38,12 +38,12 @@ class Monitor(object):
     _req = retry_session(retries=3)
 
     @classmethod
-    def as_yaml(cls, api_key=None, api_version=None):
+    def as_yaml(cls, api_key=None, api_version=None, timeout=10):
         api_key = api_key or cronitor.api_key
         resp = cls._req.get('%s.yaml' % cls._monitor_api_url(),
                         auth=(api_key, ''),
                         headers=dict(cls._headers, **{'Content-Type': 'application/yaml', 'Cronitor-Version': api_version}),
-                        timeout=10)
+                        timeout=timeout)
         if resp.status_code == 200:
             return resp.text
         else:
@@ -54,6 +54,7 @@ class Monitor(object):
         api_key = cronitor.api_key
         api_version = cronitor.api_version
         request_format = JSON
+        timeout = 10
 
         rollback = False
         if 'rollback' in kwargs:
@@ -68,11 +69,14 @@ class Monitor(object):
         if 'format' in kwargs:
             request_format = kwargs['format']
             del kwargs['format']
+        if 'timeout' in kwargs:
+            timeout = kwargs['timeout']
+            del kwargs['timeout']
 
         _monitors = monitors or [kwargs]
         nested_format = True if type(monitors) == dict else False
 
-        data = cls._put(_monitors, api_key, rollback, request_format, api_version)
+        data = cls._put(_monitors, api_key, rollback, request_format, api_version, timeout)
 
         if nested_format:
             return data
@@ -86,7 +90,7 @@ class Monitor(object):
         return _monitors if len(_monitors) > 1 else _monitors[0]
 
     @classmethod
-    def _put(cls, monitors, api_key, rollback, request_format, api_version):
+    def _put(cls, monitors, api_key, rollback, request_format, api_version, timeout):
         payload = _prepare_payload(monitors, rollback, request_format)
         if request_format == YAML:
             content_type = 'application/yaml'
@@ -101,7 +105,7 @@ class Monitor(object):
                         auth=(api_key, ''),
                         data=data,
                         headers=dict(cls._headers, **{'Content-Type': content_type, 'Cronitor-Version': api_version}),
-                        timeout=10)
+                        timeout=timeout)
 
         if resp.status_code == 200:
             if request_format == YAML:

@@ -70,21 +70,21 @@ def job(key, env=None, log_output=True, include_output=True):
         return wrapped
     return wrapper
 
-def generate_config():
+def generate_config(timeout=10):
     config = this.config or './cronitor.yaml'
     with open(config, 'w') as conf:
-        conf.writelines(Monitor.as_yaml())
+        conf.writelines(Monitor.as_yaml(timeout=timeout))
 
-def validate_config():
-    return apply_config(rollback=True)
+def validate_config(timeout=10):
+    return apply_config(rollback=True, timeout=timeout)
 
-def apply_config(rollback=False):
+def apply_config(rollback=False, timeout=10):
     if not this.config:
         raise ConfigValidationError("Must set a path to config file e.g. cronitor.config = './cronitor.yaml'")
 
     config = read_config(output=True)
     try:
-        monitors = Monitor.put(monitors=config, rollback=rollback, format=YAML)
+        monitors = Monitor.put(monitors=config, timeout=timeout, rollback=rollback, format=YAML)
         job_count = len(monitors.get('jobs', []))
         check_count = len(monitors.get('checks', []))
         heartbeat_count = len(monitors.get('heartbeats', []))
