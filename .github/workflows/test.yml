@@ -24,7 +24,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Dependencies
-        run:  pip install --upgrade pip && pip install -r requirements.txt
+        run:  pip install "Cython<3.0" pyyaml --no-build-isolation && pip install --upgrade pip && pip install -r requirements.txt
       - name: Run Tests
         run: |
           pip install pytest
